@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard — NotSpayys Anti-Cheat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+  .dash-wrap { max-width: 760px; margin: 0 auto; padding: 64px 24px; }
+  .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+  .dash-user { display: flex; align-items: center; gap: 12px; }
+  .dash-user img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); }
+  .dash-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 16px; background: var(--panel); }
+  .dash-card h3 { margin: 0 0 6px; font-size: 0.95rem; }
+  .dash-license { font-family: var(--mono); font-size: 1.05rem; letter-spacing: 0.02em; }
+  .dash-empty { color: var(--text-faint); font-size: 0.9rem; }
+  .dash-loading { color: var(--text-faint); font-family: var(--mono); font-size: 0.85rem; }
+  .status-pill { font-family: var(--mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 20px; }
+  .status-active { color: var(--green); background: var(--green-dim); }
+  .status-suspended { color: var(--amber); background: var(--amber-dim); }
+  .status-revoked { color: var(--red); background: var(--red-dim); }
+</style>
+</head>
+<body>
+  <div class="dash-wrap">
+    <div class="dash-header">
+      <a href="index.html" class="brand"><span class="brand-mark"></span>NotSpayys<span class="brand-suffix">Anti-Cheat</span></a>
+      <div class="dash-user" id="userBox"></div>
+    </div>
+
+    <div id="content">
+      <p class="dash-loading">Bezig met laden...</p>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    const API = window.NOTSPAYYS_CONFIG.API_BASE_URL;
+    const content = document.getElementById('content');
+    const userBox = document.getElementById('userBox');
+
+    function statusClass(status) {
+      if (status === 'active') return 'status-active';
+      if (status === 'suspended') return 'status-suspended';
+      return 'status-revoked';
+    }
+
+    async function loadDashboard() {
+      try {
+        const meRes = await fetch(`${API}/auth/me`, { credentials: 'include' });
+        if (meRes.status === 401) {
+          window.location.href = `${API}/auth/discord`;
+          return;
+        }
+        const me = await meRes.json();
+
+        userBox.innerHTML = `
+          ${me.discord ? `<img src="${me.discord.avatarUrl}" alt="" />` : ''}
+          <span>${me.discord ? me.discord.username : me.displayName}</span>
+          <button id="logoutBtn" class="btn btn-ghost" style="margin-left:8px;">Uitloggen</button>
+        `;
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+          await fetch(`${API}/auth/logout`, { method: 'POST', credentials: 'include' });
+          window.location.reload();
+        });
+
+        const licRes = await fetch(`${API}/licenses`, { credentials: 'include' });
+        const { licenses } = await licRes.json();
+
+        let licenseHtml;
+        if (!licenses || licenses.length === 0) {
+          licenseHtml = `
+            <div class="dash-card">
+              <h3>Nog geen license</h3>
+              <p class="dash-empty">Maak een gratis license aan om te beginnen.</p>
+              <button id="createLicenseBtn" class="btn btn-primary" style="margin-top:10px;">Gratis license aanmaken</button>
+            </div>`;
+        } else {
+          licenseHtml = licenses.map((l) => `
+            <div class="dash-card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="dash-license">${l.license_key}</span>
+                <span class="status-pill ${statusClass(l.status)}">${l.status}</span>
+              </div>
+              <p class="dash-empty" style="margin-top:10px;">
+                ${l.server_name ? `Gekoppeld aan: ${l.server_name}` : 'Nog aan geen server gekoppeld'}
+              </p>
+            </div>
+          `).join('');
+        }
+
+        content.innerHTML = `
+          <h2 style="margin-bottom:20px;">Jouw licenses</h2>
+          ${licenseHtml}
+        `;
+
+        const createBtn = document.getElementById('createLicenseBtn');
+        if (createBtn) {
+          createBtn.addEventListener('click', async () => {
+            createBtn.disabled = true;
+            createBtn.textContent = 'Bezig...';
+            await fetch(`${API}/licenses`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' } });
+            loadDashboard();
+          });
+        }
+      } catch (err) {
+        content.innerHTML = `<p class="dash-empty">Kon dashboard niet laden. Controleer of de API-URL in config.js klopt.</p>`;
+        console.error(err);
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NotSpayys Anti-Cheat — Professional FiveM Protection, Completely Free</title>
+<meta name="description" content="Een volledig gratis, server-side gevalideerde anti-cheat voor FiveM. Geen licenties, geen betaalmuur — wel een echte Detection Engine." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛰️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a href="#top" class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      NotSpayys<span class="brand-suffix">Anti-Cheat</span>
+    </a>
+    <nav class="nav" aria-label="Hoofdnavigatie">
+      <a href="#detections">Detecties</a>
+      <a href="#security">Beveiliging</a>
+      <a href="#dashboard-preview">Dashboard</a>
+      <a href="#faq">FAQ</a>
+      <a class="nav-discord" target="_blank" rel="noopener">Discord</a>
+    </nav>
+    <div class="topbar-actions">
+      <a class="btn btn-ghost" id="loginBtn" href="#">Inloggen</a>
+      <a class="btn btn-primary" href="#download">Gratis download</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="kicker">Professional FiveM Protection — Completely Free.</p>
+        <h1>Elke verdachte actie op je server komt hier eerst binnen, voordat er iets gebeurt.</h1>
+        <p class="hero-sub">
+          NotSpayys draait de belangrijkste checks server-side, weegt elke melding
+          af tegen een confidence-score, en grijpt pas in wanneer dat verantwoord is.
+          Geen losse Lua-scriptjes die op goed geluk kicken — een systeem dat precies
+          bijhoudt wat het zag, en waarom.
+        </p>
+        <div class="hero-actions">
+          <a href="#download" class="btn btn-primary btn-lg">Gratis download</a>
+          <a href="#detections" class="btn btn-outline btn-lg">Wat het detecteert</a>
+        </div>
+        <ul class="hero-meta">
+          <li><span class="dot dot-green"></span> Geen abonnementen</li>
+          <li><span class="dot dot-blue"></span> Geen betaalmuur</li>
+          <li><span class="dot dot-green"></span> Eigen gratis license per server</li>
+        </ul>
+      </div>
+
+      <div class="hero-terminal" aria-hidden="true">
+        <div class="terminal-chrome">
+          <span class="terminal-dot"></span>
+          <span class="terminal-dot"></span>
+          <span class="terminal-dot"></span>
+          <span class="terminal-title">incident-feed — live</span>
+        </div>
+        <div class="terminal-body" id="incidentFeed">
+          <!-- regels worden door app.js ingevoegd -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DETECTION MODULES ============ -->
+  <section class="section" id="detections">
+    <div class="wrap">
+      <h2>Wat het opmerkt</h2>
+      <p class="section-lead">
+        Elke module draait los, met een eigen severity en confidence-drempel die je
+        zelf instelt. Niets hiervan is hardcoded aan/uit.
+      </p>
+
+      <div class="case-registry">
+        <div class="case-row case-row-head">
+          <span>Type</span><span>Severity</span><span>Validatie</span><span>Standaardactie</span>
+        </div>
+        <!-- rijen -->
+        <div class="case-row"><span>Godmode</span><span class="sev sev-high">Hoog</span><span>Server-side</span><span>Permanente ban</span></div>
+        <div class="case-row"><span>Noclip</span><span class="sev sev-high">Hoog</span><span>Server-side</span><span>Permanente ban</span></div>
+        <div class="case-row"><span>Teleport / speed-manipulatie</span><span class="sev sev-high">Hoog</span><span>Server-side</span><span>Permanente ban</span></div>
+        <div class="case-row"><span>Wapen-manipulatie</span><span class="sev sev-high">Hoog</span><span>Server-side</span><span>Permanente ban</span></div>
+        <div class="case-row"><span>Blacklisted wapen / voertuig / ped</span><span class="sev sev-med">Middel</span><span>Server-side</span><span>Kick</span></div>
+        <div class="case-row"><span>Event-abuse / event-spam</span><span class="sev sev-med">Middel</span><span>Server-side</span><span>Tijdelijke ban</span></div>
+        <div class="case-row"><span>Resource-injectie</span><span class="sev sev-high">Hoog</span><span>Client-signaal + server-validatie</span><span>Permanente ban</span></div>
+        <div class="case-row"><span>Explosie- / particle-abuse</span><span class="sev sev-med">Middel</span><span>Server-side</span><span>Kick</span></div>
+        <div class="case-row"><span>Verdacht gedrag (laag vertrouwen)</span><span class="sev sev-low">Laag</span><span>Server-side</span><span>Loggen — geen actie</span></div>
+      </div>
+      <p class="fine-print">
+        Detecties met lage confidence worden nooit automatisch als bewezen cheat
+        behandeld — die worden gelogd, niet gehandhaafd, tot het patroon zich herhaalt
+        of de confidence stijgt.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ SECURITY ============ -->
+  <section class="section section-alt" id="security">
+    <div class="wrap security-grid">
+      <div>
+        <h2>De client wordt niet vertrouwd. Nooit.</h2>
+        <p class="section-lead">
+          Uitgangspunt: een cheat-client kan alles terugsturen wat hij wil. Daarom
+          controleert de server zelf wat er echt gebeurt, in plaats van te geloven
+          wat de speler beweert.
+        </p>
+        <ul class="check-list">
+          <li>Server-side positie-, snelheid- en schade-validatie</li>
+          <li>Rate limiting op elk event, per speler</li>
+          <li>Input-validatie op elk binnenkomend signaal</li>
+          <li>txAdmin-compatibiliteitslaag — geautoriseerde staff-acties worden nooit als cheat gezien</li>
+          <li>Audit-log op elke handmatige en automatische actie</li>
+        </ul>
+      </div>
+      <div class="terminal-chrome-wrap">
+        <div class="terminal-chrome">
+          <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+          <span class="terminal-title">detection-engine.log</span>
+        </div>
+        <pre class="terminal-static"><code><span class="mono-blue">CASE #48213</span>  player=Kowalski_92
+detection = weapon_manipulation
+confidence = <span class="mono-red">94%</span>  threshold = 70%
+state = <span class="mono-red">confirmed</span>
+action = perm_ban  (server-validated damage delta)
+--
+<span class="mono-blue">CASE #48214</span>  player=J.Verbeek
+detection = speed_manipulation
+confidence = <span class="mono-green">41%</span>  threshold = 70%
+state = <span class="mono-green">suspicious</span>  →  logged, no action taken</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DASHBOARD PREVIEW ============ -->
+  <section class="section" id="dashboard-preview">
+    <div class="wrap">
+      <h2>Jij bepaalt wanneer en hoe er wordt ingegrepen</h2>
+      <p class="section-lead">
+        Per detectie stel je de actie, severity, confidence-drempel en meldingen in
+        — of je kiest een preset (Relaxed / Balanced / Aggressive) en past er daarna
+        losse onderdelen van aan.
+      </p>
+
+      <div class="dashboard-mock">
+        <div class="dashboard-mock-sidebar">
+          <div class="dm-item dm-active">Overview</div>
+          <div class="dm-item">Detecties</div>
+          <div class="dm-item">Spelers</div>
+          <div class="dm-item">Bans</div>
+          <div class="dm-item">Staff</div>
+          <div class="dm-item">Instellingen</div>
+        </div>
+        <div class="dashboard-mock-main">
+          <div class="dm-row">
+            <span>Godmode</span>
+            <span class="dm-pill dm-pill-on">Aan</span>
+            <span class="dm-select">Permanent ban</span>
+            <span class="dm-select">Confidence 80%</span>
+          </div>
+          <div class="dm-row">
+            <span>Speed-manipulatie</span>
+            <span class="dm-pill dm-pill-on">Aan</span>
+            <span class="dm-select">Kick</span>
+            <span class="dm-select">Confidence 65%</span>
+          </div>
+          <div class="dm-row">
+            <span>Event-spam</span>
+            <span class="dm-pill dm-pill-on">Aan</span>
+            <span class="dm-select">Tijdelijke ban</span>
+            <span class="dm-select">Confidence 70%</span>
+          </div>
+          <div class="dm-row dm-row-muted">
+            <span>Particle-abuse</span>
+            <span class="dm-pill dm-pill-off">Uit</span>
+            <span class="dm-select">—</span>
+            <span class="dm-select">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section section-alt" id="faq">
+    <div class="wrap wrap-narrow">
+      <h2>Veelgestelde vragen</h2>
+
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>Is dit echt volledig gratis?</summary>
+          <p>Ja. Geen abonnementen, geen betaalde licenties, geen verplichte
+          aankopen. Iedere server krijgt een eigen gratis license.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Werkt dit samen met txAdmin?</summary>
+          <p>Ja — er zit een aparte compatibiliteitslaag in die geautoriseerde
+          txAdmin- en staff-acties herkent, zodat die nooit als cheat worden
+          gemarkeerd. Je kan dit ook los aan- of uitzetten.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Wat gebeurt er bij een lage-confidence-melding?</summary>
+          <p>Die wordt gelogd, niet gehandhaafd. Pas als het patroon zich herhaalt
+          of de confidence boven jouw ingestelde drempel komt, volgt er een actie
+          — en dat bepaal jij zelf, per detectietype.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Kan ik zelf zien wélke evidence tot een ban leidde?</summary>
+          <p>Ja, elke detectie en ban is gekoppeld aan de onderliggende evidence
+          in het dashboard — niets wordt "zomaar" gehandhaafd zonder dat je kan
+          navragen waarom.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="section final-cta" id="download">
+    <div class="wrap final-cta-inner">
+      <div>
+        <h2>Zet 'm live op je server</h2>
+        <p class="section-lead">Login met Discord, maak een gratis license aan, download de resource.</p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-lg" id="downloadLoginBtn" href="#">Login met Discord</a>
+        <a class="btn btn-outline btn-lg nav-discord" target="_blank" rel="noopener">Discord community</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>NotSpayys Anti-Cheat</span>
+    <span class="footer-dim">Gratis. Server-side. Geen betaalmuur.</span>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
