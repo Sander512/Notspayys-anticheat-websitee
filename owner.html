@@ -10,10 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css" />
 <style>
-  .owner-wrap { max-width: 1180px; margin: 0 auto; padding: 40px 24px 80px; }
-  .owner-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+  .owner-wrap { max-width: 1220px; margin: 0 auto; padding: 72px 24px 100px; }
+  .owner-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px; flex-wrap: wrap; gap: 16px; }
+  .owner-intro h1 { font-size: clamp(1.9rem, 3vw, 2.4rem); margin-bottom: 8px; }
+  .owner-intro p { font-size: 1rem; max-width: 62ch; margin-bottom: 40px; }
   .owner-user { display: flex; align-items: center; gap: 12px; }
-  .owner-user img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); }
+  .owner-user img { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); }
 
   .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 32px; }
   .stat-card { border: 1px solid var(--border); background: var(--panel); border-radius: var(--radius); padding: 16px; }
@@ -65,12 +67,19 @@
       <div class="owner-user" id="userBox"></div>
     </div>
 
-    <div id="deniedBox" class="denied" style="display:none;">
+    <div class="denied" id="deniedBox" style="display:none;">
       <h2>Geen toegang</h2>
       <p>Dit paneel is alleen zichtbaar voor de platform-eigenaar.</p>
     </div>
 
     <div id="ownerContent" style="display:none;">
+      <div class="owner-intro">
+        <h1>Owner Panel</h1>
+        <p>Volledig overzicht over elke klant, server en license op het platform.
+        Acties hier (blokkeren, suspenden, revoken) gaan direct in, en worden
+        vastgelegd in de audit-log.</p>
+      </div>
+
       <div class="stat-grid" id="statGrid"></div>
 
       <div class="tabs">

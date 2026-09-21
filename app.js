@@ -13,6 +13,34 @@
     });
 
     // ---------------------------------------------------------------
+    // Login-status checken: pas de topbar aan zonder de bezoeker meteen
+    // het dashboard in te sturen. Faalt de check (geen sessie, netwerk-
+    // fout), dan blijft gewoon de uitgelogde topbar staan.
+    // ---------------------------------------------------------------
+    const loggedOutBox = document.getElementById('loggedOutActions');
+    const loggedInBox = document.getElementById('loggedInActions');
+
+    if (loggedOutBox && loggedInBox) {
+        fetch(`${cfg.API_BASE_URL}/auth/me`, { credentials: 'include' })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((me) => {
+                if (!me) return;
+                if (me.discord) {
+                    document.getElementById('navAvatar').src = me.discord.avatarUrl;
+                    document.getElementById('navUsername').textContent = me.discord.username;
+                } else {
+                    document.getElementById('navAvatar').remove();
+                    document.getElementById('navUsername').textContent = me.displayName;
+                }
+                loggedOutBox.classList.add('hidden');
+                loggedInBox.classList.remove('hidden');
+            })
+            .catch(() => {
+                // niet ingelogd of API niet bereikbaar — gewoon de uitgelogde staat tonen
+            });
+    }
+
+    // ---------------------------------------------------------------
     // Live-ogende incident-feed in de hero. Eén orkestreerd moment,
     // geen decoratieve hover-effecten door de rest van de pagina.
     // ---------------------------------------------------------------

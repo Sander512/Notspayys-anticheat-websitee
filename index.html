@@ -20,15 +20,21 @@
       NotSpayys<span class="brand-suffix">Anti-Cheat</span>
     </a>
     <nav class="nav" aria-label="Hoofdnavigatie">
+      <a href="#how-it-works">Hoe het werkt</a>
       <a href="#detections">Detecties</a>
       <a href="#security">Beveiliging</a>
       <a href="#dashboard-preview">Dashboard</a>
       <a href="#faq">FAQ</a>
       <a class="nav-discord" target="_blank" rel="noopener">Discord</a>
     </nav>
-    <div class="topbar-actions">
+    <div class="topbar-actions" id="loggedOutActions">
       <a class="btn btn-ghost" id="loginBtn" href="#">Inloggen</a>
       <a class="btn btn-primary" href="#download">Gratis download</a>
+    </div>
+    <div class="topbar-actions topbar-user hidden" id="loggedInActions">
+      <img id="navAvatar" class="nav-avatar" alt="" />
+      <span id="navUsername" class="nav-username"></span>
+      <a class="btn btn-primary" href="dashboard.html">Dashboard</a>
     </div>
   </div>
 </header>
@@ -45,7 +51,9 @@
           NotSpayys draait de belangrijkste checks server-side, weegt elke melding
           af tegen een confidence-score, en grijpt pas in wanneer dat verantwoord is.
           Geen losse Lua-scriptjes die op goed geluk kicken — een systeem dat precies
-          bijhoudt wat het zag, en waarom.
+          bijhoudt wat het zag, wanneer, met welke onderbouwing, en waarom het wel of
+          niet ingreep. Elke beslissing is achteraf na te trekken in je dashboard,
+          inclusief de ruwe evidence die tot die beslissing leidde.
         </p>
         <div class="hero-actions">
           <a href="#download" class="btn btn-primary btn-lg">Gratis download</a>
@@ -72,13 +80,59 @@
     </div>
   </section>
 
+  <!-- ============ HOE HET WERKT ============ -->
+  <section class="section" id="how-it-works">
+    <div class="wrap">
+      <h2>Hoe het werkt</h2>
+      <p class="section-lead">
+        Geen zwarte doos. Elk signaal doorloopt dezelfde vier stappen, en jij
+        bepaalt op elke stap zelf de drempelwaarden.
+      </p>
+
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="how-num">1</div>
+          <h3>Signaal</h3>
+          <p>Een detectiemodule op de server (of, als extra hint, de client)
+          merkt iets ongebruikelijks op — een snelheid die niet klopt, een
+          wapen dat meer schade doet dan het zou moeten, een event dat te
+          vaak binnenkomt.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">2</div>
+          <h3>Validatie</h3>
+          <p>De server controleert dit onafhankelijk van wat de client
+          beweert — positie, snelheid en schade worden serverside opnieuw
+          berekend, niet blind overgenomen.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">3</div>
+          <h3>Confidence-score</h3>
+          <p>Het signaal krijgt een score tussen 0 en 100%. Pas boven de
+          drempel die jij per detectietype instelt, telt het als "bevestigd"
+          in plaats van "verdacht".</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">4</div>
+          <h3>Actie</h3>
+          <p>Alleen bij een bevestigde detectie volgt de actie die jij hebt
+          ingesteld — loggen, waarschuwen, kicken, of bannen. Alles wordt
+          vastgelegd, inclusief de evidence erachter.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ DETECTION MODULES ============ -->
   <section class="section" id="detections">
     <div class="wrap">
       <h2>Wat het opmerkt</h2>
       <p class="section-lead">
         Elke module draait los, met een eigen severity en confidence-drempel die je
-        zelf instelt. Niets hiervan is hardcoded aan/uit.
+        zelf instelt. Niets hiervan is hardcoded aan/uit — je kan per detectietype
+        kiezen tussen loggen, waarschuwen, kicken, tijdelijk bannen of permanent
+        bannen, en de gevoeligheid apart afstellen zodat het past bij hoe jouw
+        server draait.
       </p>
 
       <div class="case-registry">
@@ -112,7 +166,9 @@
         <p class="section-lead">
           Uitgangspunt: een cheat-client kan alles terugsturen wat hij wil. Daarom
           controleert de server zelf wat er echt gebeurt, in plaats van te geloven
-          wat de speler beweert.
+          wat de speler beweert. Positie, snelheid, schade en wapen-gedrag worden
+          onafhankelijk herberekend op de server — een client-signaal is hooguit
+          een hint, nooit het laatste woord.
         </p>
         <ul class="check-list">
           <li>Server-side positie-, snelheid- en schade-validatie</li>
@@ -148,7 +204,8 @@ state = <span class="mono-green">suspicious</span>  →  logged, no action taken
       <p class="section-lead">
         Per detectie stel je de actie, severity, confidence-drempel en meldingen in
         — of je kiest een preset (Relaxed / Balanced / Aggressive) en past er daarna
-        losse onderdelen van aan.
+        losse onderdelen van aan. Elke wijziging is direct actief, zonder dat je de
+        resource opnieuw hoeft te starten.
       </p>
 
       <div class="dashboard-mock">

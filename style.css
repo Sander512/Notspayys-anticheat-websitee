@@ -42,9 +42,9 @@ body {
 
 a { color: inherit; text-decoration: none; }
 h1, h2, h3 { font-weight: 600; letter-spacing: -0.01em; margin: 0 0 16px; }
-h1 { font-size: clamp(2rem, 4vw, 2.9rem); line-height: 1.12; }
-h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); }
-p { color: var(--text-dim); margin: 0 0 16px; max-width: 62ch; }
+h1 { font-size: clamp(2.3rem, 4.6vw, 3.4rem); line-height: 1.1; }
+h2 { font-size: clamp(1.7rem, 3vw, 2.35rem); }
+p { color: var(--text-dim); margin: 0 0 16px; max-width: 62ch; font-size: 1.02rem; }
 
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 24px; }
 .wrap-narrow { max-width: 760px; }
@@ -70,6 +70,10 @@ p { color: var(--text-dim); margin: 0 0 16px; max-width: 62ch; }
 .nav { display: flex; gap: 28px; font-size: 0.92rem; color: var(--text-dim); }
 .nav a:hover { color: var(--text); }
 .topbar-actions { display: flex; gap: 10px; align-items: center; }
+.hidden { display: none !important; }
+.topbar-user { gap: 10px; }
+.nav-avatar { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); }
+.nav-username { font-size: 0.86rem; color: var(--text-dim); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 @media (max-width: 860px) {
     .nav { display: none; }
@@ -93,7 +97,7 @@ p { color: var(--text-dim); margin: 0 0 16px; max-width: 62ch; }
 .btn-outline:hover { border-color: var(--text-faint); background: var(--panel); }
 
 /* ---------- hero ---------- */
-.hero { padding: 64px 0 88px; }
+.hero { padding: 88px 0 104px; }
 .hero-grid {
     display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center;
 }
@@ -146,9 +150,18 @@ p { color: var(--text-dim); margin: 0 0 16px; max-width: 62ch; }
 .mono-green { color: var(--green); }
 
 /* ---------- sections ---------- */
-.section { padding: 84px 0; }
+.section { padding: 104px 0; }
 .section-alt { background: var(--panel); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .section-lead { max-width: 62ch; font-size: 1.02rem; }
+
+/* hoe het werkt */
+.how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 36px; }
+@media (max-width: 920px) { .how-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .how-grid { grid-template-columns: 1fr; } }
+.how-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 20px; background: var(--panel); }
+.how-num { font-family: var(--mono); font-size: 0.8rem; color: var(--green); border: 1px solid var(--green-dim); background: var(--green-dim); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+.how-card h3 { font-size: 1.02rem; margin-bottom: 8px; }
+.how-card p { font-size: 0.9rem; margin: 0; }
 
 /* case registry (detection modules) */
 .case-registry { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-top: 32px; }
