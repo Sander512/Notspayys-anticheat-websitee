@@ -1,3 +1,15 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/auth/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/auth/:path*" },
+    { "source": "/licenses/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/licenses/:path*" },
+    { "source": "/servers/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/servers/:path*" },
+    { "source": "/players/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/players/:path*" },
+    { "source": "/detections/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/detections/:path*" },
+    { "source": "/bans/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/bans/:path*" },
+    { "source": "/logs/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/logs/:path*" },
+    { "source": "/config/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/config/:path*" },
+    { "source": "/admin/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/admin/:path*" },
+    { "source": "/heartbeat", "destination": "https://notspayy-anticheat-api.vercel.app/heartbeat" }
+  ]
 }
