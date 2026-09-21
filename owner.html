@@ -58,6 +58,21 @@
 
   .empty-row td { color: var(--text-faint); text-align: center; padding: 24px; }
   .denied { text-align: center; padding: 120px 24px; color: var(--text-dim); }
+
+  .bot-settings-form { max-width: 560px; display: flex; flex-direction: column; gap: 24px; }
+  .bot-settings-section { border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; background: var(--panel); }
+  .bot-settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .bot-settings-header h3 { margin: 0; font-size: 0.95rem; }
+  .field-label { display: block; font-size: 0.78rem; color: var(--text-faint); margin: 12px 0 6px; }
+  .field-label:first-of-type { margin-top: 0; }
+  .field-hint { display: block; font-size: 0.74rem; color: var(--text-faint); margin-top: 6px; }
+  .text-input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    font-family: var(--mono); font-size: 0.84rem; padding: 8px 10px; border-radius: 2px; resize: vertical;
+  }
+  .text-input:focus { outline: none; border-color: var(--green); }
+  .switch { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); cursor: pointer; }
+  .switch input { accent-color: var(--green); width: 16px; height: 16px; }
 </style>
 </head>
 <body>
@@ -87,6 +102,7 @@
         <button class="tab-btn" data-tab="servers">Servers</button>
         <button class="tab-btn" data-tab="licenses">Licenses</button>
         <button class="tab-btn" data-tab="audit">Audit-log</button>
+        <button class="tab-btn" data-tab="bot">Bot</button>
       </div>
 
       <div class="tab-panel active" id="tab-customers">
@@ -123,6 +139,42 @@
             <tbody id="auditBody"><tr class="empty-row"><td colspan="4">Laden...</td></tr></tbody>
           </table>
         </div>
+      </div>
+
+      <div class="tab-panel" id="tab-bot">
+        <form id="botSettingsForm" class="bot-settings-form">
+          <div class="bot-settings-section">
+            <div class="bot-settings-header">
+              <h3>Welkomstbericht</h3>
+              <label class="switch">
+                <input type="checkbox" id="welcomeEnabled" />
+                <span>Aan</span>
+              </label>
+            </div>
+            <label class="field-label">Kanaal-ID</label>
+            <input type="text" id="welcomeChannelId" class="text-input" placeholder="bv. 123456789012345678" />
+            <label class="field-label">Bericht</label>
+            <textarea id="welcomeMessage" class="text-input" rows="3" placeholder="Welkom {user} op {server}!"></textarea>
+            <p class="field-hint">Placeholders: {user}, {username}, {membercount}, {server}</p>
+          </div>
+
+          <div class="bot-settings-section">
+            <div class="bot-settings-header">
+              <h3>Support-tickets</h3>
+              <label class="switch">
+                <input type="checkbox" id="supportEnabled" />
+                <span>Aan</span>
+              </label>
+            </div>
+            <label class="field-label">Categorie-ID (waar ticket-kanalen onder komen)</label>
+            <input type="text" id="supportCategoryId" class="text-input" placeholder="bv. 123456789012345678" />
+            <label class="field-label">Staff-rol-ID (krijgt automatisch toegang tot elk ticket)</label>
+            <input type="text" id="supportStaffRoleId" class="text-input" placeholder="bv. 123456789012345678" />
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="saveBotSettingsBtn">Opslaan</button>
+          <span id="botSettingsStatus" class="field-hint"></span>
+        </form>
       </div>
     </div>
   </div>
@@ -265,6 +317,7 @@
       renderServers(serversRes.servers);
       renderLicenses(licensesRes.licenses);
       renderAudit(auditRes.auditLogs);
+      await loadBotSettings();
     }
 
     // ---------------- Actie-knoppen (event delegation) ----------------
@@ -286,6 +339,45 @@
         await loadAll();
       } catch (err) {
         alert('Actie mislukt: ' + err.message);
+        btn.disabled = false;
+      }
+    });
+
+    // ---------------- Bot-instellingen ----------------
+    async function loadBotSettings() {
+      const { settings } = await api('/bot-settings/admin');
+      if (!settings) return;
+      document.getElementById('welcomeEnabled').checked = !!settings.welcome_enabled;
+      document.getElementById('welcomeChannelId').value = settings.welcome_channel_id || '';
+      document.getElementById('welcomeMessage').value = settings.welcome_message || '';
+      document.getElementById('supportEnabled').checked = !!settings.support_enabled;
+      document.getElementById('supportCategoryId').value = settings.support_category_id || '';
+      document.getElementById('supportStaffRoleId').value = settings.support_staff_role_id || '';
+    }
+
+    document.getElementById('botSettingsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('saveBotSettingsBtn');
+      const status = document.getElementById('botSettingsStatus');
+      btn.disabled = true;
+      status.textContent = 'Opslaan...';
+
+      try {
+        await api('/bot-settings/admin', {
+          method: 'PATCH',
+          body: JSON.stringify({
+            welcomeEnabled: document.getElementById('welcomeEnabled').checked,
+            welcomeChannelId: document.getElementById('welcomeChannelId').value.trim() || null,
+            welcomeMessage: document.getElementById('welcomeMessage').value.trim(),
+            supportEnabled: document.getElementById('supportEnabled').checked,
+            supportCategoryId: document.getElementById('supportCategoryId').value.trim() || null,
+            supportStaffRoleId: document.getElementById('supportStaffRoleId').value.trim() || null,
+          }),
+        });
+        status.textContent = 'Opgeslagen. De bot ververst dit binnen een minuut vanzelf.';
+      } catch (err) {
+        status.textContent = 'Opslaan mislukt: ' + err.message;
+      } finally {
         btn.disabled = false;
       }
     });

@@ -10,6 +10,8 @@
     { "source": "/logs/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/logs/:path*" },
     { "source": "/config/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/config/:path*" },
     { "source": "/admin/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/admin/:path*" },
+    { "source": "/bot-settings", "destination": "https://notspayy-anticheat-api.vercel.app/bot-settings" },
+    { "source": "/bot-settings/:path*", "destination": "https://notspayy-anticheat-api.vercel.app/bot-settings/:path*" },
     { "source": "/heartbeat", "destination": "https://notspayy-anticheat-api.vercel.app/heartbeat" }
   ]
 }
