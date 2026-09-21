@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Owner Panel — NotSpayys Anti-Cheat</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+<style>
+  .owner-wrap { max-width: 1180px; margin: 0 auto; padding: 40px 24px 80px; }
+  .owner-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
+  .owner-user { display: flex; align-items: center; gap: 12px; }
+  .owner-user img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border); }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 32px; }
+  .stat-card { border: 1px solid var(--border); background: var(--panel); border-radius: var(--radius); padding: 16px; }
+  .stat-card .num { font-family: var(--mono); font-size: 1.6rem; color: var(--text); }
+  .stat-card .label { font-size: 0.78rem; color: var(--text-faint); margin-top: 4px; }
+
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+  .tab-btn {
+    background: none; border: none; color: var(--text-faint); font-family: var(--sans);
+    font-size: 0.9rem; padding: 10px 16px; cursor: pointer; border-bottom: 2px solid transparent;
+  }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--green); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+  .data-table th {
+    text-align: left; font-family: var(--mono); font-size: 0.72rem; color: var(--text-faint);
+    padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+
+  .mono-cell { font-family: var(--mono); font-size: 0.8rem; color: var(--text-dim); }
+  .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .row-actions button {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text-dim);
+    font-family: var(--sans); font-size: 0.76rem; padding: 4px 9px; border-radius: 2px; cursor: pointer;
+  }
+  .row-actions button:hover { color: var(--text); border-color: var(--text-faint); }
+  .row-actions button.danger:hover { color: var(--red); border-color: var(--red-dim); }
+  .row-actions button.positive:hover { color: var(--green); border-color: var(--green-dim); }
+
+  .pill { font-family: var(--mono); font-size: 0.72rem; padding: 2px 8px; border-radius: 20px; }
+  .pill-green { color: var(--green); background: var(--green-dim); }
+  .pill-red { color: var(--red); background: var(--red-dim); }
+  .pill-amber { color: var(--amber); background: var(--amber-dim); }
+  .pill-dim { color: var(--text-faint); background: rgba(255,255,255,0.04); }
+
+  .empty-row td { color: var(--text-faint); text-align: center; padding: 24px; }
+  .denied { text-align: center; padding: 120px 24px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+  <div class="owner-wrap">
+    <div class="owner-header">
+      <a href="index.html" class="brand"><span class="brand-mark"></span>NotSpayys<span class="brand-suffix">Owner Panel</span></a>
+      <div class="owner-user" id="userBox"></div>
+    </div>
+
+    <div id="deniedBox" class="denied" style="display:none;">
+      <h2>Geen toegang</h2>
+      <p>Dit paneel is alleen zichtbaar voor de platform-eigenaar.</p>
+    </div>
+
+    <div id="ownerContent" style="display:none;">
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="customers">Klanten</button>
+        <button class="tab-btn" data-tab="servers">Servers</button>
+        <button class="tab-btn" data-tab="licenses">Licenses</button>
+        <button class="tab-btn" data-tab="audit">Audit-log</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-customers">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Naam</th><th>Discord</th><th>Licenses</th><th>Servers</th><th>Status</th><th>Laatste login</th><th>Acties</th></tr></thead>
+            <tbody id="customersBody"><tr class="empty-row"><td colspan="7">Laden...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-servers">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Server</th><th>Eigenaar</th><th>License</th><th>Online</th><th>Detecties</th><th>Status</th><th>Acties</th></tr></thead>
+            <tbody id="serversBody"><tr class="empty-row"><td colspan="7">Laden...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-licenses">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>License key</th><th>Eigenaar</th><th>Server</th><th>Status</th><th>Laatst gezien</th><th>Acties</th></tr></thead>
+            <tbody id="licensesBody"><tr class="empty-row"><td colspan="6">Laden...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-audit">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Tijd</th><th>Door</th><th>Actie</th><th>Doel</th></tr></thead>
+            <tbody id="auditBody"><tr class="empty-row"><td colspan="4">Laden...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    const API = window.NOTSPAYYS_CONFIG.API_BASE_URL;
+
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    async function api(path, opts = {}) {
+      const res = await fetch(`${API}${path}`, {
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        ...opts,
+        body: opts.method && opts.method !== 'GET' ? (opts.body || '{}') : undefined,
+      });
+      if (!res.ok) throw new Error(`${path} -> ${res.status}`);
+      return res.json();
+    }
+
+    // ---------------- Tabs ----------------
+    document.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ---------------- Renderers ----------------
+    function renderStats(s) {
+      const items = [
+        { num: s.totalUsers, label: 'Klanten' },
+        { num: s.totalServers, label: 'Servers' },
+        { num: s.onlineServers, label: 'Servers online' },
+        { num: s.detectionsLast24h, label: 'Detecties (24u)' },
+        { num: s.bansLast24h, label: 'Bans (24u)' },
+      ];
+      document.getElementById('statGrid').innerHTML = items.map((i) => `
+        <div class="stat-card"><div class="num">${i.num}</div><div class="label">${i.label}</div></div>
+      `).join('');
+    }
+
+    function renderCustomers(customers) {
+      const body = document.getElementById('customersBody');
+      if (customers.length === 0) { body.innerHTML = '<tr class="empty-row"><td colspan="7">Nog geen klanten.</td></tr>'; return; }
+      body.innerHTML = customers.map((c) => `
+        <tr>
+          <td>${c.display_name}</td>
+          <td class="mono-cell">${c.discord_username || '—'}</td>
+          <td class="mono-cell">${c.license_count}</td>
+          <td class="mono-cell">${c.server_count}</td>
+          <td>${c.is_blocked ? '<span class="pill pill-red">Geblokkeerd</span>' : '<span class="pill pill-green">Actief</span>'}</td>
+          <td class="mono-cell">${fmtDate(c.last_login_at)}</td>
+          <td class="row-actions">
+            ${c.is_blocked
+              ? `<button class="positive" data-action="unblock-customer" data-id="${c.id}">Deblokkeren</button>`
+              : `<button class="danger" data-action="block-customer" data-id="${c.id}">Blokkeren</button>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderServers(servers) {
+      const body = document.getElementById('serversBody');
+      if (servers.length === 0) { body.innerHTML = '<tr class="empty-row"><td colspan="7">Nog geen servers.</td></tr>'; return; }
+      body.innerHTML = servers.map((s) => `
+        <tr>
+          <td>${s.name}</td>
+          <td>${s.owner_name}</td>
+          <td class="mono-cell">${s.license_key || '—'}</td>
+          <td>${s.is_online ? '<span class="pill pill-green">Online</span>' : '<span class="pill pill-dim">Offline</span>'}</td>
+          <td class="mono-cell">${s.detection_count}</td>
+          <td>${s.is_blocked ? '<span class="pill pill-red">Geblokkeerd</span>' : '<span class="pill pill-green">Actief</span>'}</td>
+          <td class="row-actions">
+            ${s.is_blocked
+              ? `<button class="positive" data-action="unblock-server" data-id="${s.id}">Deblokkeren</button>`
+              : `<button class="danger" data-action="block-server" data-id="${s.id}">Blokkeren</button>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function licensePill(status) {
+      if (status === 'active') return '<span class="pill pill-green">Actief</span>';
+      if (status === 'suspended') return '<span class="pill pill-amber">Suspended</span>';
+      return '<span class="pill pill-red">Revoked</span>';
+    }
+
+    function renderLicenses(licenses) {
+      const body = document.getElementById('licensesBody');
+      if (licenses.length === 0) { body.innerHTML = '<tr class="empty-row"><td colspan="6">Nog geen licenses.</td></tr>'; return; }
+      body.innerHTML = licenses.map((l) => `
+        <tr>
+          <td class="mono-cell">${l.license_key}</td>
+          <td>${l.display_name}${l.discord_username ? ` (${l.discord_username})` : ''}</td>
+          <td>${l.server_name || '—'}</td>
+          <td>${licensePill(l.status)}</td>
+          <td class="mono-cell">${fmtDate(l.last_seen_at)}</td>
+          <td class="row-actions">
+            ${l.status !== 'suspended' ? `<button data-action="suspend-license" data-id="${l.id}">Suspend</button>` : ''}
+            ${l.status !== 'active' ? `<button class="positive" data-action="reactivate-license" data-id="${l.id}">Reactiveer</button>` : ''}
+            ${l.status !== 'revoked' ? `<button class="danger" data-action="revoke-license" data-id="${l.id}">Revoke</button>` : ''}
+            <button data-action="reset-license" data-id="${l.id}">Reset binding</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAudit(logs) {
+      const body = document.getElementById('auditBody');
+      if (logs.length === 0) { body.innerHTML = '<tr class="empty-row"><td colspan="4">Nog geen audit-log entries.</td></tr>'; return; }
+      body.innerHTML = logs.map((a) => `
+        <tr>
+          <td class="mono-cell">${fmtDate(a.created_at)}</td>
+          <td>${a.actor_display_name || a.actor_label || 'Systeem'}</td>
+          <td class="mono-cell">${a.action}</td>
+          <td class="mono-cell">${a.target_type ? `${a.target_type}:${(a.target_id || '').slice(0, 8)}` : '—'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // ---------------- Data laden ----------------
+    async function loadAll() {
+      const [stats, customersRes, serversRes, licensesRes, auditRes] = await Promise.all([
+        api('/admin/stats'),
+        api('/admin/customers'),
+        api('/admin/servers'),
+        api('/licenses/admin/all'),
+        api('/admin/audit-logs?limit=100'),
+      ]);
+      renderStats(stats);
+      renderCustomers(customersRes.customers);
+      renderServers(serversRes.servers);
+      renderLicenses(licensesRes.licenses);
+      renderAudit(auditRes.auditLogs);
+    }
+
+    // ---------------- Actie-knoppen (event delegation) ----------------
+    document.getElementById('ownerContent').addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const { action, id } = btn.dataset;
+      btn.disabled = true;
+
+      try {
+        if (action === 'block-customer') await api(`/admin/customers/${id}/block`, { method: 'POST' });
+        if (action === 'unblock-customer') await api(`/admin/customers/${id}/unblock`, { method: 'POST' });
+        if (action === 'block-server') await api(`/admin/servers/${id}/block`, { method: 'POST' });
+        if (action === 'unblock-server') await api(`/admin/servers/${id}/unblock`, { method: 'POST' });
+        if (action === 'suspend-license') await api(`/licenses/admin/${id}/suspend`, { method: 'POST', body: JSON.stringify({ reason: 'Via owner panel' }) });
+        if (action === 'revoke-license') await api(`/licenses/admin/${id}/revoke`, { method: 'POST', body: JSON.stringify({ reason: 'Via owner panel' }) });
+        if (action === 'reactivate-license') await api(`/licenses/admin/${id}/reactivate`, { method: 'POST' });
+        if (action === 'reset-license') await api(`/licenses/admin/${id}/reset-binding`, { method: 'POST' });
+        await loadAll();
+      } catch (err) {
+        alert('Actie mislukt: ' + err.message);
+        btn.disabled = false;
+      }
+    });
+
+    // ---------------- Init: eerst checken of dit echt de owner is ----------------
+    (async function init() {
+      try {
+        const meRes = await fetch(`${API}/auth/me`, { credentials: 'include' });
+        if (meRes.status === 401) {
+          window.location.href = `${API}/auth/discord`;
+          return;
+        }
+        const me = await meRes.json();
+
+        if (!me.isOwner) {
+          document.getElementById('deniedBox').style.display = 'block';
+          return;
+        }
+
+        document.getElementById('userBox').innerHTML = `
+          ${me.discord ? `<img src="${me.discord.avatarUrl}" alt="" />` : ''}
+          <span>${me.discord ? me.discord.username : me.displayName}</span>
+        `;
+        document.getElementById('ownerContent').style.display = 'block';
+        await loadAll();
+      } catch (err) {
+        document.getElementById('deniedBox').style.display = 'block';
+        document.querySelector('#deniedBox p').textContent = 'Kon niet laden: ' + err.message;
+        console.error(err);
+      }
+    })();
+  </script>
+</body>
+</html>
